@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const prompts = require('prompts');
 const utils = require('./utils');
 const { projectPath } = require('./config');
 
@@ -12,14 +13,36 @@ const { projectPath } = require('./config');
     const dateLine = readFile.match(utils.pattern.date).pop();
     const fundsList = fundLines.map(line => line.replace(utils.pattern.fund, "$1"));
 
-    const newValues = [4.4444, 5.5555, 6.6656, "31 February 1991"]
-    const newDate = newValues.pop();
-    const newFunds = newValues;
+    let newFunds;
+    let newDate;
+    let confirm = false;
+    while (!confirm) {
+      newFunds = [];
+      for (const fund of fundsList) {
+        const newValue = await utils.promptFund(fund);
+        newFunds.push(newValue);
+      }
+      newDate = await utils.promptDate();
 
+      const question = [
+        {
+          type: 'confirm',
+          name: 'value',
+          message: 'Confirm values?',
+        }
+      ];
+      const onCancel = () => {
+        throw new Error('Exited before complete')
+      }
+      const response = await prompts(question, { onCancel });
+      confirm = response.value;
+    }
+    
     let newFile = utils.updateFunds(fundLines, newFunds, readFile);
     newFile = utils.updateDate(dateLine, newDate, newFile);
   
     fs.writeFileSync(filePath, newFile);
+    console.log('Nav values updated')
   } catch (error) {
     console.error(error)
   }
