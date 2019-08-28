@@ -1,4 +1,5 @@
 const path = require('path');
+const prompts = require('prompts');
 const { abbreviations } = require('./config');
 
 module.exports = {
@@ -8,12 +9,14 @@ module.exports = {
     valueFund: /\d\.\d{4}/g,
     valueDate: /\d{1,2}\s(January|February|March|April|May|June|July|August|September|October|November|December)\s\d{4}/g,
   },
-  resolveHome(filePath) {
-    if (filePath[0] === '~') {
-        return path.join(process.env.HOME, filePath.slice(1));
-    }
-    return path.resolve(__dirname, filePath);
-  },
+  /**
+   * Update fund values in file
+   *
+   * @param lines
+   * @param newValues
+   * @param file
+   * @returns {string}
+   */
   updateFunds(lines, newValues, file) {
     const newLines = [];
     for (let i = 0; i < newValues.length; i++) {
@@ -28,6 +31,14 @@ module.exports = {
   
     return newFile;
   },
+  /**
+   * Update source date in file
+   *
+   * @param line
+   * @param newDate
+   * @param file
+   * @returns {string}
+   */
   updateDate(line, newDate, file) {
     const newLine = line.replace(this.pattern.valueDate, newDate);
   
