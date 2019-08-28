@@ -1,5 +1,5 @@
 module.exports = {
-  projectPath: "~/Documents/update-nav/rhb-sg-ui",
+  projectPath: "/User/Satoshi/Documents/rhb-sg-ui",
   abbreviations: {
     rsif: "RHB Singapore Income Fund",
     repf: "RHB Entrepreneur Fund",
