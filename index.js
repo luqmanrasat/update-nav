@@ -6,12 +6,15 @@ const { projectPath } = require('./config');
 
 (async () => {
   try {
-    const filePath = path.join(projectPath, "views/enums/enums-asset-management-overview.jade");
+    const filePath = path.resolve(__dirname, "./test/enums-asset-management-overview.jade");
+    // const filePath = path.join(projectPath, "views/enums/enums-asset-management-overview.jade");
     let readFile = fs.readFileSync(filePath, { encoding: 'utf8'});
   
-    const fundLines = readFile.match(utils.pattern.fund);
-    const dateLine = readFile.match(utils.pattern.date).pop();
-    const fundsList = fundLines.map(line => line.replace(utils.pattern.fund, "$1"));
+    const patternFund = new RegExp(utils.pattern.fund, 'g');
+    const fundLines = readFile.match(patternFund);
+    const fundsList = fundLines.map(line => line.replace(patternFund, "$1"));
+    const patternDate = new RegExp(utils.pattern.date, 'g');
+    const dateLine = readFile.match(patternDate).pop();
 
     let newFunds;
     let newDate;

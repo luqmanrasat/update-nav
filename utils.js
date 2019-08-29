@@ -3,10 +3,11 @@ const { abbreviations } = require('./config');
 
 module.exports = {
   pattern: {
-    fund: /.+\<td.+data\=\"nav\-(\w+)\".+\>/g,
-    date: /.+\<div.+data\=\"nav\-date\".+\>/g,
-    valueFund: "\\d\\.\\d{4}",
-    valueDate: "\\d{1,2}\\s(January|February|March|April|May|June|July|August|September|October|November|December)\\s\\\d{4}",
+    fund: '.+\\<td.+data\\=\\"nav\\-(\\w+)\\".+\\>',
+    date: '.+\\<div.+data\\=\\"nav\\-date\\".+\\>',
+    valueFund: "^\\d\\.\\d{4}$",
+    valueDate: "^\\d{1,2}\\s(January|February|March|April|May|June|July|August|September|October|November|December)\\s\\\d{4}$",
+    replace: "(.+\\>)(.+)(\\<.+)"
   },
   /**
    * Prompts user to input new fund value
@@ -33,7 +34,7 @@ module.exports = {
       }
       const response = await prompts(question, { onCancel });
 
-      const pattern = new RegExp(`^${this.pattern.valueFund}$`, 'g');
+      const pattern = new RegExp(this.pattern.valueFund, 'g');
       if (pattern.test(response[fundName])) {
         return response[fundName]
       }
@@ -61,7 +62,7 @@ module.exports = {
       }
       const response = await prompts(question, { onCancel });
 
-      const pattern = new RegExp(`^${this.pattern.valueDate}$`, 'g');
+      const pattern = new RegExp(this.pattern.valueDate, 'g');
       if (pattern.test(response.date)) {
         return response.date
       }
@@ -80,8 +81,8 @@ module.exports = {
   updateFunds(lines, newValues, file) {
     const newLines = [];
     for (let i = 0; i < newValues.length; i++) {
-      const pattern = new RegExp(this.pattern.valueFund, 'g');
-      const newLine = lines[i].replace(pattern, newValues[i]);
+      const pattern = new RegExp(this.pattern.replace, 'g');
+      const newLine = lines[i].replace(pattern, `$1${newValues[i]}$3`);
       newLines.push(newLine);
     }
   
@@ -101,8 +102,9 @@ module.exports = {
    * @returns {string}
    */
   updateDate(line, newDate, file) {
-    const pattern = new RegExp(this.pattern.valueDate, 'g');
-    const newLine = line.replace(pattern, newDate);
+    const text = `Source: Bloomberg, as at ${newDate}`;
+    const pattern = new RegExp(this.pattern.replace, 'g');
+    const newLine = line.replace(pattern, `$1${text}$3`);
   
     return newFile = file.replace(line, newLine);
   }
