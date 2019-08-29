@@ -6,8 +6,7 @@ const { projectPath } = require('./config');
 
 (async () => {
   try {
-    const filePath = path.resolve(__dirname, "./test/enums-asset-management-overview.jade");
-    // const filePath = path.join(projectPath, "views/enums/enums-asset-management-overview.jade");
+    const filePath = path.join(projectPath, "views/enums/enums-asset-management-overview.jade");
     let readFile = fs.readFileSync(filePath, { encoding: 'utf8'});
   
     const patternFund = new RegExp(utils.pattern.fund, 'g');
