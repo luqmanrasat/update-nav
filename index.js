@@ -6,7 +6,8 @@ const { projectPath } = require('./config');
 
 (async () => {
   try {
-    await utils.gitCheckoutPull('update/nav-value');
+    const branch = 'update/nav-value';
+    await utils.gitCheckoutPull(branch);
     const filePath = path.join(projectPath, "views/enums/enums-asset-management-overview.jade");
     let readFile = fs.readFileSync(filePath, { encoding: 'utf8'});
   
@@ -45,10 +46,22 @@ const { projectPath } = require('./config');
     let newFile = utils.updateFunds(fundLines, newFunds, readFile);
     newFile = utils.updateDate(dateLine, newDate, newFile);
     fs.writeFileSync(filePath, newFile);
-    console.log('Nav values updated')
+    console.log('Nav values updated');
 
     await utils.gitAddCommit(filePath, 'Update nav value');
-    
+    await utils.gitPush(branch)
+
+    console.log('Merge with staging branch...');
+    await utils.gitCheckoutPull('staging');
+    await utils.gitMerge(branch);
+    await utils.gitPush('staging')
+
+    console.log('Merge with master branch...');
+    await utils.gitCheckoutPull('master');
+    await utils.gitMerge(branch);
+    await utils.gitPush('master')
+
+    console.log('Done without error')
   } catch (error) {
     console.error(error)
   }

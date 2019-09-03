@@ -35,6 +35,26 @@ module.exports = {
     console.log('Done commit changes');
   },
   /**
+   * Git merge
+   *
+   * @param branchName
+   */
+  async gitMerge(branchName) {
+    console.log('Merging branch...');
+    const merge = await git.mergeFromTo('update/nav-value', branchName, {'--no-edit': null});
+    console.log(merge.summary);
+  },
+  /**
+   * Git push
+   *
+   * @param branchName
+   */
+  async gitPush(branchName) {
+    console.log('Pushing branch...');
+    await git.push('origin', branchName);
+    console.log('Done push');
+  },
+  /**
    * Prompts user to input new fund value
    *
    * @param fundName
