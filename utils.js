@@ -2,6 +2,10 @@ const prompts = require('prompts');
 const { projectPath, abbreviations } = require('./config');
 const git = require('simple-git/promise')(projectPath);
 
+const onCancel = () => {
+  throw new Error('Exited before complete')
+}
+
 module.exports = {
   pattern: {
     fund: '.+\\<td.+data\\=\\"nav\\-(\\w+)\\".+\\>',
@@ -74,9 +78,6 @@ module.exports = {
           message: `Enter new value for ${abbreviations[fundName]}:`
         }
       ];
-      const onCancel = () => {
-        throw new Error('Exited before complete')
-      }
       const response = await prompts(question, { onCancel });
 
       const pattern = new RegExp(this.pattern.valueFund, 'g');
@@ -102,9 +103,6 @@ module.exports = {
           message: 'Enter new date:'
         }
       ];
-      const onCancel = () => {
-        throw new Error('Exited before complete')
-      }
       const response = await prompts(question, { onCancel });
 
       const pattern = new RegExp(this.pattern.valueDate, 'g');
@@ -114,6 +112,39 @@ module.exports = {
 
       console.log('Invalid input. Example: 29 August 2019');
     }
+  },
+  /**
+   * Prompts user to confirm nav values
+   *
+   * @returns {boolean}
+   */
+  async promptConfirm() {
+    const question = [
+      {
+        type: 'confirm',
+        name: 'value',
+        message: 'Confirm values?',
+      }
+    ];
+    const response = await prompts(question, { onCancel });
+    return response.value;
+  },
+  /**
+   * Prompts user to confirm merge
+   *
+   * @param branchName
+   * @returns {boolean}
+   */
+  async promptMerge(branchName) {
+    const question = [
+      {
+        type: 'confirm',
+        name: branchName,
+        message: `Merge with ${branchName} branch?`,
+      }
+    ];
+    const response = await prompts(question, { onCancel });
+    return response[branchName];
   },
   /**
    * Update fund values in file

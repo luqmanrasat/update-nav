@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs');
-const prompts = require('prompts');
 const utils = require('./utils');
 const { projectPath } = require('./config');
 
@@ -27,19 +26,7 @@ const { projectPath } = require('./config');
         newFunds.push(newValue);
       }
       newDate = await utils.promptDate();
-
-      const question = [
-        {
-          type: 'confirm',
-          name: 'value',
-          message: 'Confirm values?',
-        }
-      ];
-      const onCancel = () => {
-        throw new Error('Exited before complete')
-      }
-      const response = await prompts(question, { onCancel });
-      confirm = response.value;
+      confirm = await utils.promptConfirm();
     }
     
     console.log('Updating nav values...')
@@ -51,18 +38,22 @@ const { projectPath } = require('./config');
     await utils.gitAddCommit(filePath, 'Update nav value');
     await utils.gitPush(branch)
 
-    console.log('Merge with staging branch...');
-    await utils.gitCheckoutPull('staging');
-    await utils.gitMerge(branch);
-    await utils.gitPush('staging')
+    const mergeStaging = await utils.promptMerge('staging');
+    if (mergeStaging) {
+      await utils.gitCheckoutPull('staging');
+      await utils.gitMerge(branch);
+      await utils.gitPush('staging');
+    }
+    
+    const mergeMaster = await utils.promptMerge('master');
+    if (mergeMaster) {
+      await utils.gitCheckoutPull('master');
+      await utils.gitMerge(branch);
+      await utils.gitPush('master')
+    }
 
-    console.log('Merge with master branch...');
-    await utils.gitCheckoutPull('master');
-    await utils.gitMerge(branch);
-    await utils.gitPush('master')
-
-    console.log('Done without error')
+    console.log('Done without error');
   } catch (error) {
-    console.error(error)
+    console.error(error.message)
   }
 })();
