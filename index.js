@@ -44,12 +44,18 @@ const { projectPath } = require('./config');
       await utils.gitMerge(branch);
       await utils.gitPush('staging');
     }
+    else {
+      throw new Error('Nav updated without merging to staging & master branch')
+    }
     
     const mergeMaster = await utils.promptMerge('master');
     if (mergeMaster) {
       await utils.gitCheckoutPull('master');
       await utils.gitMerge(branch);
       await utils.gitPush('master')
+    }
+    else {
+      throw new Error('Nav updated without merging to master branch')
     }
 
     console.log('Done without error');
