@@ -6,6 +6,7 @@ const { projectPath } = require('./config');
 
 (async () => {
   try {
+    await utils.gitCheckoutPull('update/nav-value');
     const filePath = path.join(projectPath, "views/enums/enums-asset-management-overview.jade");
     let readFile = fs.readFileSync(filePath, { encoding: 'utf8'});
   
@@ -40,11 +41,14 @@ const { projectPath } = require('./config');
       confirm = response.value;
     }
     
+    console.log('Updating nav values...')
     let newFile = utils.updateFunds(fundLines, newFunds, readFile);
     newFile = utils.updateDate(dateLine, newDate, newFile);
-  
     fs.writeFileSync(filePath, newFile);
     console.log('Nav values updated')
+
+    await utils.gitAddCommit(filePath, 'Update nav value');
+    
   } catch (error) {
     console.error(error)
   }

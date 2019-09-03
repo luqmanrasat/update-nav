@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "prompts": "^2.2.1"
+    "prompts": "^2.2.1",
+    "simple-git": "^1.124.0"
   }
 }

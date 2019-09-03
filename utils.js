@@ -1,5 +1,6 @@
 const prompts = require('prompts');
-const { abbreviations } = require('./config');
+const { projectPath, abbreviations } = require('./config');
+const git = require('simple-git/promise')(projectPath);
 
 module.exports = {
   pattern: {
@@ -8,6 +9,30 @@ module.exports = {
     valueFund: "^\\d\\.\\d{4}$",
     valueDate: "^\\d{1,2}\\s(January|February|March|April|May|June|July|August|September|October|November|December)\\s\\\d{4}$",
     replace: "(.+\\>)(.+)(\\<.+)"
+  },
+  /**
+   * Git checkout to other branch & pull latest changes
+   *
+   * @param branchName
+   */
+  async gitCheckoutPull(branchName) {
+    await git.checkout(branchName);
+    console.log(`Current branch: '${branchName}'`);
+    console.log('Pull branch...');
+    const pull = await git.pull();
+    console.log(pull.summary);
+  },
+  /**
+   * Git add file & commit changes
+   *
+   * @param filePath
+   * @param message
+   */
+  async gitAddCommit(filePath, message) {
+    await git.add(filePath);
+    console.log(`Staged ${filePath} for commit`);
+    await git.commit(message);
+    console.log('Done commit changes');
   },
   /**
    * Prompts user to input new fund value
@@ -54,7 +79,7 @@ module.exports = {
         {
           type: 'text',
           name: 'date',
-          message: 'Enter new source date:'
+          message: 'Enter new date:'
         }
       ];
       const onCancel = () => {
@@ -102,7 +127,7 @@ module.exports = {
    * @returns {string}
    */
   updateDate(line, newDate, file) {
-    const text = `Source: Bloomberg, as at ${newDate}`;
+    const text = `As at ${newDate}`;
     const pattern = new RegExp(this.pattern.replace, 'g');
     const newLine = line.replace(pattern, `$1${text}$3`);
   
