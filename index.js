@@ -17,11 +17,12 @@ const { projectPath } = require('./config');
     const patternDate = new RegExp(utils.pattern.date, 'g');
     const dateLine = readFile.match(patternDate).pop();
 
+    console.log('Getting values from nav-datasheet.xlsx...');
     const { newNav, newDate } = await utils.getNavFromXlsx(xlsxFilePath);
+    console.log("Nav Values: "+ newNav);
+    console.log("Date: "+ newDate);
 
-    console.log('Updating nav values...')
-    console.log("funds: "+ newNav)
-    console.log("date: "+ newDate)
+    console.log('Updating nav values...');
     let newFile = utils.updateFunds(fundLines, newNav, readFile);
     newFile = utils.updateDate(dateLine, newDate, newFile);
     fs.writeFileSync(jadeFilePath, newFile);
