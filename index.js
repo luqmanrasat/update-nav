@@ -22,30 +22,34 @@ const { projectPath } = require('./config');
     console.log("Nav Values: "+ newNav);
     console.log("Date: "+ newDate);
 
-    // console.log('Updating nav values...');
-    // let newFile = utils.updateFunds(fundLines, newNav, readFile);
-    // newFile = utils.updateDate(dateLine, newDate, newFile);
-    // fs.writeFileSync(jadeFilePath, newFile);
-    // console.log('Nav values updated');
+    const confirmNav = await utils.promptConfirmNav();
+    if (!confirmNav) {
+      throw new Error('Check xlsx file & rerun the script')
+    }
+    console.log('Updating nav values...');
+    let newFile = utils.updateFunds(fundLines, newNav, readFile);
+    newFile = utils.updateDate(dateLine, newDate, newFile);
+    fs.writeFileSync(jadeFilePath, newFile);
+    console.log('Nav values updated');
 
-    // await utils.gitAddCommit(jadeFilePath, 'Update nav value');
-    // await utils.gitPush(branch)
+    await utils.gitAddCommit(jadeFilePath, 'Update nav value');
+    await utils.gitPush(branch)
 
-    // const mergeStaging = await utils.promptMerge('staging');
-    // if (!mergeStaging) {
-    //   throw new Error('Nav updated without merging to staging & master branch')
-    // }
-    // await utils.gitCheckoutPull('staging');
-    // await utils.gitMerge(branch);
-    // await utils.gitPush('staging');
+    const mergeStaging = await utils.promptMerge('staging');
+    if (!mergeStaging) {
+      throw new Error('Nav updated without merging to staging & master branch')
+    }
+    await utils.gitCheckoutPull('staging');
+    await utils.gitMerge(branch);
+    await utils.gitPush('staging');
     
-    // const mergeMaster = await utils.promptMerge('master');
-    // if (!mergeMaster) {
-    //   throw new Error('Nav updated without merging to master branch')
-    // }
-    // await utils.gitCheckoutPull('master');
-    // await utils.gitMerge(branch);
-    // await utils.gitPush('master');
+    const mergeMaster = await utils.promptMerge('master');
+    if (!mergeMaster) {
+      throw new Error('Nav updated without merging to master branch')
+    }
+    await utils.gitCheckoutPull('master');
+    await utils.gitMerge(branch);
+    await utils.gitPush('master');
 
     console.log('Done without error');
   } catch (error) {
