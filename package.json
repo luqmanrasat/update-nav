@@ -10,7 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "prompts": "^2.2.1",
-    "read-excel-file": "^4.0.2",
+    "read-excel-file": "^5.5.0",
     "simple-git": "^1.124.0"
   },
   "dependencies": {}
